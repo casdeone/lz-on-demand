@@ -32,7 +32,7 @@ jobs:
         echo "${{ inputs.tags }}"
     - name: 'Define runtime variables'
       run: |
-        echo Im defining any runtime variables needed to be gathered from the inputs'
+        echo 'Im defining any runtime variables needed to be gathered from the inputs'
     - name: 'Test if ${{ inputs.lzName }} exists'
       run: |
         repoTestOutput=$(curl \
