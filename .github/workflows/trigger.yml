@@ -46,6 +46,7 @@ jobs:
         else
           repo_exists="false"
         fi 
+        echo $repo_exists
   call-workflow-create-gh-repo:
     uses: ./.github/workflows/create-gh-repo.yml
     with:
