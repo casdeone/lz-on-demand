@@ -6,22 +6,38 @@ on:
         description: 'Region'
         required: true
         default: 'CentralUS'
+      templateRepoUrl: 
+        description: 'URL of template repo'
+        required: true
+        default: ''
       lzName:
         description: 'Landing Zone Name'
         required: true
         default: ''
       tags:
         description: 'JSON to define tags'
-        required: true
+        required: false
         default: '{}'
 
 
 jobs:
-  say_hello:
+  validate_inputs:
     runs-on: ubuntu-latest
     steps:
-    - run: |
+    - name: 'Output inputs received'
+      run: |
         echo "The value stream is ${{ inputs.lzName }}"
         echo "The region is ${{ inputs.region }}."
         echo "Here is a list of the tags defined:"
         echo "${{ inputs.tags }}"
+    - name: 'Define runtime variables'
+      run: |
+        echo 'I'm defining any runtime variables needed to be gathered from the inputs
+  call-workflow-create-gh-repo:
+    uses: ./.github/workflows/create-gh-repo.yml
+    with:
+      repoName: ${{ inputs.lzName }}
+      templateRepoUrl:  ${{ inputs.templateRepoUrl }}
+    # secrets:
+    #   ${{}}
+
