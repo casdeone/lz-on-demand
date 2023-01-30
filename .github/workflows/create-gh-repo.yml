@@ -17,9 +17,12 @@ jobs:
     steps:
     - name: 'Create new repo'
       run: |
-        repoOutput=$(curl -X POST 'https://api.github.com/orgs/${{ vars.GH_USER }}/repos' \
+        # Used for organization GitHub Accounts
+        # repoOutput=$(curl -X POST 'https://api.github.com/orgs/${{ vars.GH_USER }}/repos' \
+        # Used for Personal GitHub Accounts
+        repoOutput=$(curl -X POST 'https://api.github.com/user/repos' \
         -H "Accept: application/vnd.github+json" \
-        -H "Authorization: Bearer ${{ secrets.GH_TOKEN }}"\
+        -H "Authorization: Bearer ${{ secrets.GH_TOKEN }}" \
         -H "X-GitHub-Api-Version: 2022-11-28" \
         -d '{"name":"${{ inputs.repoName }}","private":true}')
         newRepoApiUrl=$(echo $repoOutput | jq '.url' -r )
@@ -27,9 +30,9 @@ jobs:
         echo "::set-env name=newRepoApiUrl::$newRepoApiUrl"
     - name: 'Import template repo'
       run: |
-        importOutput=$(curl -X PUT '$newRepoApiUrl/import' \
+        importOutput=$(curl -X PUT '$newRepoApiUrl/import \
         -H "Accept: application/vnd.github+json" \
-        -H "Authorization: Bearer ${{ secrets.GH_TOKEN }}"\
+        -H "Authorization: Bearer ${{ secrets.GH_TOKEN }}" \
         -H "X-GitHub-Api-Version: 2022-11-28" \
         -d '{"vcs":"subversion","vcs_url":"${{ inputs.templateRepoUrl }}","vcs_username":"${{ vars.GH_USER }}","vcs_password":"${{ secrets.GH_TOKEN  }}"}')
         importStatus=$(echo $importOutput | jq '.status' -r )
