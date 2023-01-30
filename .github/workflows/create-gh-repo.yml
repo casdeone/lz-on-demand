@@ -17,7 +17,7 @@ jobs:
     steps:
     - name: 'Create new repo'
       run: |
-        repoOutput=$(curl -X POST https://api.github.com/org/${{ vars.GH_USER }}/repos \
+        repoOutput=$(curl -X POST https://api.github.com/orgs/${{ vars.GH_USER }}/repos \
         -H "Accept: application/vnd.github+json" \
         -H "Authorization: Bearer ${{ secrets.GH_TOKEN }}"\
         -H "X-GitHub-Api-Version: 2022-11-28" \
