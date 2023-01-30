@@ -2,5 +2,5 @@
 1. Permissions required for the Workflow to run on
 - GitHub
 - Terraform Cloud
-- Any Additional Platforms!?
+- Any additional platforms!?
 
