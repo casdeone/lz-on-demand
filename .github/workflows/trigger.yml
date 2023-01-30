@@ -38,6 +38,5 @@ jobs:
     with:
       repoName: ${{ inputs.lzName }}
       templateRepoUrl:  ${{ inputs.templateRepoUrl }}
-    # secrets:
-    #   ${{}}
+    secrets: inherit
 
