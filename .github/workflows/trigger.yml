@@ -1,0 +1,27 @@
+name: 'Trigger Workflow'
+on:
+  workflow_dispatch:
+    inputs:
+      region:
+        description: 'Region'
+        required: true
+        default: 'CentralUS'
+      lzName:
+        description: 'Landing Zone Name'
+        required: true
+        default: ''
+      tags:
+        description: 'JSON to define tags'
+        required: true
+        default: '{}'
+
+
+jobs:
+  say_hello:
+    runs-on: ubuntu-latest
+    steps:
+    - run: |
+        echo "The value stream is ${{ inputs.lzName }}"
+        echo "The region is ${{ inputs.region }}."
+        echo "Here is a list of the tags defined:"
+        echo "${{ inputs.tags }}"
