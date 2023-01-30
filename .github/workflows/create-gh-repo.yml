@@ -27,10 +27,11 @@ jobs:
         -d '{"name":"${{ inputs.repoName }}","private":true}')
         newRepoApiUrl=$(echo $repoOutput | jq '.url' -r )
         if [ -z "$newRepoApiUrl" ]; then exit 2 ; fi 
-        echo "newRepoApiUrl==$newRepoApiUrl" >> $GITHUB_ENV
+        echo $newRepoApiUrl
+        echo "new_repo_api_url=$newRepoApiUrl" >> $GITHUB_ENV
     - name: 'Import template repo'
       run: |
-        importOutput=$(curl -X PUT '${{ env.newRepoApiUrl }}/import' \
+        importOutput=$(curl -X PUT '${{ env.new_repo_api_url }}/import' \
         -H "Accept: application/vnd.github+json" \
         -H "Authorization: Bearer ${{ secrets.GH_TOKEN }}" \
         -H "X-GitHub-Api-Version: 2022-11-28" \
