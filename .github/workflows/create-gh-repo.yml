@@ -21,7 +21,7 @@ jobs:
         -H "Accept: application/vnd.github+json" \
         -H "Authorization: Bearer ${{ secrets.GH_TOKEN }}"\
         -H "X-GitHub-Api-Version: 2022-11-28" \
-        -d '{"name":"${{ input.repoName}}","private":true}')
+        -d '{"name":"${{ inputs.repoName }}","private":true}')
         newRepoApiUrl=$(echo $repoOutput | jq '.url' -r )
         if [ -z "$newRepoApiUrl" ]; then exit 2 ; fi 
         echo "::set-env name=newRepoApiUrl::$newRepoApiUrl"
@@ -31,6 +31,6 @@ jobs:
         -H "Accept: application/vnd.github+json" \
         -H "Authorization: Bearer ${{ secrets.GH_TOKEN }}"\
         -H "X-GitHub-Api-Version: 2022-11-28" \
-        -d '{"vcs":"subversion","vcs_url":"${{ input.templateRepoUrl }}","vcs_username":"${{ env.GH_USER }}","vcs_password":"${{ secret.GH_TOKEN  }}"}')
+        -d '{"vcs":"subversion","vcs_url":"${{ inputs.templateRepoUrl }}","vcs_username":"${{ env.GH_USER }}","vcs_password":"${{ secret.GH_TOKEN  }}"}')
         importStatus=$(echo $importOutput | jq '.status' -r )
         if [ -z "$importStatus" ]; then exit 2 ; fi 
