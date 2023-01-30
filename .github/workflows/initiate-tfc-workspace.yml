@@ -1,4 +1,4 @@
-name: 'Create TFC Worksapce'
+name: 'Initiate TFC Worksapce'
 on: 
   workflow_call:
     inputs:
@@ -22,5 +22,10 @@ jobs:
     - name: 'Authenticate to Terraform Cloud'
       run: |
         export TF_TOKEN_app_terraform_io=${{ inputs.apiToken }}
-        terraform login app.terraform.io 
+        
+
+# Next steps:
+# 1. Figure how to run TF Init within Runner to create workspace
+# 2. Define variables for within the TFC workspace
+# 3. Run the Infra workspace to deploy the infra
         
