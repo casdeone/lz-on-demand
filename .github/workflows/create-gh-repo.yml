@@ -45,7 +45,7 @@ jobs:
         echo "New Repo URL is: "$newRepoUrl
         echo "NEW_REPO_API_URL=$newRepoApiUrl" >> $GITHUB_ENV
         echo "NEW_REPO_URL=$newRepoApiUrl" >> $GITHUB_ENV
-        echo "NEW_REPO_FULL_NAME=$newRepoUrl" >> $GITHUB_ENV
+        echo "NEW_REPO_FULL_NAME=$newRepoName" >> $GITHUB_ENV
     - name: 'Import template repo'
       run: |
         importOutput=$(curl -X PUT '${{ env.NEW_REPO_API_URL }}/import' \
