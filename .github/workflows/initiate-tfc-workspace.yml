@@ -20,10 +20,11 @@ jobs:
     runs-on: ubuntu-latest
     steps:
     - name: 'Define runtime variables'
+      shell: bash
       run: |
         echo 'Im defining any runtime variables needed to be gathered from the inputs'
-        mkdir ${{ GITHUB_ACTION_PATH }}/temp
-        echo "REPO_TEMP_PATH=${{ GITHUB_ACTION_PATH }}/temp" >> $GITHUB_ENV
+        mkdir ${{ GITHUB.ACTION.PATH }}/temp
+        echo "REPO_TEMP_PATH=${{ GITHUB.ACTION.PATH }}/temp" >> $GITHUB_ENV
     - uses: actions/checkout@v3
       with:
         repository: ${{ inputs.TFC_REPO }}
