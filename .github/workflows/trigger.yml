@@ -48,14 +48,26 @@ jobs:
         fi 
         echo $repo_exists
   call-workflow-create-gh-repo:
+    name: 'Create new GitHub Repo based on Templare URL'
     uses: ./.github/workflows/create-gh-repo.yml
     with:
       REPO_NAME: ${{ inputs.LANDING_ZONE_NAME }}
       TEMPLATE_REPO_URL:  ${{ inputs.TEMPLATE_REPO_URL }}
     secrets: inherit
-  call-workflow-initiate-tfc-workspace:
+  call-workflow-update-tfc-provider-file:
+    name: 'Updates the provider.tf file with the details of the TFC Workspace'
     uses: ./.github/workflows/initiate-tfc-workspace.yml
     needs: call-workflow-create-gh-repo
+    with:
+      WORKSPACE_NAME: ${{ inputs.LANDING_ZONE_NAME }}
+      ORG_NAME:  ${{ vars.TFC_ORG }}
+      TFC_REPO: ${{ needs.call-workflow-create-gh-repo.outputs.NEW_REPO_FULL_NAME }}
+      TFC_REPO_BRANCH: ${{ needs.call-workflow-create-gh-repo.outputs.NEW_REPO_DEFAULT_BRANCH }}
+    secrets: inherit
+  call-workflow-initiate-tfc-workspace:
+    name: 'Creates TFC Workspace and define variables'
+    uses: ./.github/workflows/initiate-tfc-workspace.yml
+    needs: [call-workflow-create-gh-repo, call-workflow-update-tfc-provider-file]
     with:
       WORKSPACE_NAME: ${{ inputs.LANDING_ZONE_NAME }}
       ORG_NAME:  ${{ vars.TFC_ORG }}
