@@ -60,5 +60,6 @@ jobs:
       WORKSPACE_NAME: ${{ inputs.LANDING_ZONE_NAME }}
       ORG_NAME:  ${{ vars.TFC_ORG }}
       TFC_REPO: ${{ needs.call-workflow-create-gh-repo.outputs.NEW_REPO_FULL_NAME }}
+      TFC_REPO_BRANCH: ${{ needs.call-workflow-create-gh-repo.outputs.NEW_REPO_DEFAULT_BRANCH }}
     secrets: inherit
 

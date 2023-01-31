@@ -17,7 +17,10 @@ on:
       NEW_REPO_FULL_NAME:
         description: 'The full name of the new repo that was created'
         value: ${{ jobs.create_repo.outputs.NEW_REPO_FULL_NAME }}
-
+      NEW_REPO_DEFAULT_BRANCH:
+        description: 'The default branch of the new repo that was created'
+        value: ${{ jobs.create_repo.outputs.NEW_REPO_DEFAULT_BRANCH }}
+        
 jobs:
   create_repo:
     runs-on: ubuntu-latest
@@ -25,6 +28,7 @@ jobs:
       NEW_REPO_API_URL: ${{ env.NEW_REPO_API_URL }}
       NEW_REPO_URL: ${{ env.NEW_REPO_URL }}
       NEW_REPO_FULL_NAME: ${{ env.NEW_REPO_FULL_NAME }}
+      NEW_REPO_DEFAULT_BRANCH: ${{ env.NEW_REPO_DEFAULT_BRANCH }}
     steps:
     - name: 'Create new repo'
       run: |
@@ -39,13 +43,16 @@ jobs:
         newRepoApiUrl=$(echo $repoOutput | jq '.url' -r )
         newRepoName=$(echo $repoOutput | jq '.full_name' -r )
         newRepoUrl=$(echo $repoOutput | jq '.html_url' -r )
+        newRepoDefaultBranch=$(echo $repoOutput | jq '.default_branch' -r )
         if [ -z "$newRepoApiUrl" ]; then exit 2 ; fi 
         echo "New Repo API URL is: "$newRepoApiUrl
         echo "New Repo Name is: "$newRepoName
         echo "New Repo URL is: "$newRepoUrl
+        echo "New Repo Default Branch is: "$newRepoDefaultBranch
         echo "NEW_REPO_API_URL=$newRepoApiUrl" >> $GITHUB_ENV
         echo "NEW_REPO_URL=$newRepoApiUrl" >> $GITHUB_ENV
         echo "NEW_REPO_FULL_NAME=$newRepoName" >> $GITHUB_ENV
+        echo "NEW_REPO_DEFAULT_BRANCH=$newRepoDefaultBranch" >> $GITHUB_ENV
     - name: 'Import template repo'
       run: |
         importOutput=$(curl -X PUT '${{ env.NEW_REPO_API_URL }}/import' \

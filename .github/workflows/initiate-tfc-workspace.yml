@@ -14,6 +14,10 @@ on:
         description: 'Defines the URL that contains the workspace code'
         required: true
         type: string
+      TFC_REPO_BRANCH:
+        description: 'Defines the branch that contains the workspace code'
+        required: true
+        type: string
 
 jobs:
   create_workspace:
@@ -29,6 +33,7 @@ jobs:
       with:
         repository: ${{ inputs.TFC_REPO }}
         path: ${{ env.REPO_TEMP_PATH }}
+        ref: ${{ inputs.TFC_REPO_BRANCH }}
     - name: 'Cheating and sleeping for 20 seconds to let import finish'
       run: |
         sleep 20
