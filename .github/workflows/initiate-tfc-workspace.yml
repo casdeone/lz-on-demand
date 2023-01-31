@@ -33,6 +33,7 @@ jobs:
       with:
         repository: ${{ inputs.TFC_REPO }}
         path: ${{ env.REPO_TEMP_PATH }}
+        token: ${{ secrets.GH_TOKEN }}
         ref: ${{ inputs.TFC_REPO_BRANCH }}
     - name: 'Cheating and sleeping for 20 seconds to let import finish'
       run: |
