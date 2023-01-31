@@ -73,7 +73,7 @@ jobs:
         workspaceUpdate=$( curl -X PATCH 'https://app.terraform.io/api/v2/organizations/${{ inputs.ORG_NAME }}/workspaces/${{ inputs.WORKSPACE_NAME }}' \
         --header "Authorization: Bearer ${{ secrets.TFC_TOKEN }}" \
         --header "Content-Type: application/vnd.api+json" \
-        --data-raw '{"data":{"attributes":{"vcs-repo":{"identifier":"${{ inputs.TFC_REPO }}","oauth-token-id":"${{ $secrets.TFC_GH_TOKEN_ID }}","branch":"${{ $inputs.TFC_REPO_BRANCH }}"}}}}' )
+        --data-raw '{"data":{"attributes":{"vcs-repo":{"identifier":"${{ inputs.TFC_REPO }}","oauth-token-id":"${{ secrets.TFC_GH_TOKEN_ID }}","branch":"${{ inputs.TFC_REPO_BRANCH }}"}}}}' )
         workspaceName=$( echo $workspaceUpdate | jq '.data.attributes.name' -r )
         if [ -z "$workspaceName" ]; then exit 2 ; fi 
     - name: 'Get variable set used to authenticate with Hyper scaler'
