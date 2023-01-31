@@ -42,7 +42,7 @@ jobs:
     - name: 'Update TFC Variable - location'
       uses: cbsinteractive/create-tfc-workspace-variable-action@v1
       with:
-        tfcToken: ${{ secrets.GH_TOKEN }}
+        tfcToken: ${{ secrets.TFC_TOKEN }}
         orgName: ${{ inputs.ORG_NAME }}
         workspaceName: ${{ inputs.WORKSPACE_NAME }}
         variableName: location
@@ -52,7 +52,7 @@ jobs:
     - name: 'Update TFC Variable - ARM_SUBSCRIPTION_ID'
       uses: cbsinteractive/create-tfc-workspace-variable-action@v1
       with:
-        tfcToken: ${{ secrets.GH_TOKEN }}
+        tfcToken: ${{ secrets.TFC_TOKEN }}
         orgName: ${{ inputs.ORG_NAME }}
         workspaceName: ${{ inputs.WORKSPACE_NAME }}
         variableName: location
