@@ -68,18 +68,17 @@ jobs:
         echo "WORKSPACE_ID=$workspaceId" >> $GITHUB_ENV
         echo "workspaceId is $workspaceId"
         if [ -z "$workspaceId" ]; then exit 2 ; fi 
-    - name: 'Assign variable set to workspace to authenticate with Hyper scaler'
-      shell: bash
+    - name: 'Get variable set used to authenticate with Hyper scaler'
       run: |
-        # Determine ID of existing variable set used to authenticate with Hyper scaler
         variableSets=$( curl -X GET 'https://app.terraform.io/api/v2/organizations/${{ inputs.ORG_NAME}}/varsets' \
         --header "Authorization: Bearer ${{ secrets.TFC_TOKEN }}" \
         --header "Content-Type: application/vnd.api+json" )
         varSetId=$( echo $variableSets | jq '.data[] | select ( .attributes.name == "${{ vars.TFC_AZURE_VAR_SET_NAME }}" ) | .id ' -r )
         echo "varSetId is $varSetId"
         if [ -z "$varSetId" ]; then exit 2 ; fi
-        # Assign variable set to workspace
         echo "VAR_SET_ID=$varSetId" >> $GITHUB_ENV
+    - name: 'Add variable set used to authenticate with Hyper scaler with workspace'
+      run: |        
         applyOutput=$( curl -X POST 'https://app.terraform.io/api/v2/varset/${{ env.VAR_SET_ID }}/relationships/workspaces' \
         --header "Authorization: Bearer ${{ secrets.TFC_TOKEN }}" \
         --header "Content-Type: application/vnd.api+json" \
