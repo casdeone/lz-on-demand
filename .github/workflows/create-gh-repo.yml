@@ -10,10 +10,21 @@ on:
         description: 'Defines the repo to use as a template to copy the code into'
         required: true
         type: string
+    outputs:
+      NEW_REPO_URL:
+        description: 'The URL of the new repo that was created'
+        value: ${{ env.NEW_REPO_API_URL }}
+      NEW_REPO_FULLNAME:
+        description: 'The full name of the new repo that was created'
+        value: ${{ .NEW_REPO_FULLNAME }}
 
 jobs:
   create_repo:
     runs-on: ubuntu-latest
+    outputs:
+      NEW_REPO_API_URL: ${{ env.NEW_REPO_API_URL }}
+      NEW_REPO_URL: ${{ env.NEW_REPO_URL }}
+      NEW_REPO_FULLNAME: ${{ env.NEW_REPO_FULLNAME }}
     steps:
     - name: 'Create new repo'
       run: |
@@ -26,9 +37,15 @@ jobs:
         -H "X-GitHub-Api-Version: 2022-11-28" \
         -d '{"name":"${{ inputs.REPO_NAME }}","private":true}')
         newRepoApiUrl=$(echo $repoOutput | jq '.url' -r )
+        newRepoName=$(echo $repoOutput | jq '.full_name' -r )
+        newRepoUrl=$(echo $repoOutput | jq '.html_url' -r )
         if [ -z "$newRepoApiUrl" ]; then exit 2 ; fi 
-        echo $newRepoApiUrl
+        echo "New Repo API URL is: "$newRepoApiUrl
+        echo "New Repo Name is: "$newRepoName
+        echo "New Repo URL is: "$newRepoUrl
         echo "NEW_REPO_API_URL=$newRepoApiUrl" >> $GITHUB_ENV
+        echo "NEW_REPO_URL=$newRepoApiUrl" >> $GITHUB_ENV
+        echo "NEW_REPO_FULLNAME=$newRepoUrl" >> $GITHUB_ENV
     - name: 'Import template repo'
       run: |
         importOutput=$(curl -X PUT '${{ env.NEW_REPO_API_URL }}/import' \
