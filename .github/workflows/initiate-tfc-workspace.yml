@@ -55,7 +55,7 @@ jobs:
         tfcToken: ${{ secrets.TFC_TOKEN }}
         orgName: ${{ inputs.ORG_NAME }}
         workspaceName: ${{ inputs.WORKSPACE_NAME }}
-        variableName: location
+        variableName: ARM_SUBSCRIPTION_ID
         category: env
         sensitive: true
         value: ${{ secrets.ARM_SUBSCRIPTION_ID }}
