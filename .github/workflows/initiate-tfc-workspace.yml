@@ -108,10 +108,8 @@ jobs:
         --header "Authorization: Bearer ${{ secrets.TFC_TOKEN }}" \
         --header "Content-Type: application/vnd.api+json" \
         --data-raw '{"data":{"attributes":{"message":"Initial Deployment. Initiated by GitHub Actions","auto-apply":true},"type":"runs","relationships":{"workspace":{"data":{"type":"workspaces","id":"${{ env.WORKSPACE_ID }}"}}}}}' )
-        echo "applyOutput is $applyOutput"
-        if [ -n "$applyOutput" ]; then
-          applyErrors=$( echo $applyOutput | jq '.errors[]' -r ) 
-          echo $applyErrors 
+        if [ -z "$applyOutput" ]; then
+          echo "applyOutput is $applyOutput"
           exit 2 ; 
         fi
 
