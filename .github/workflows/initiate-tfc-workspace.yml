@@ -39,10 +39,58 @@ jobs:
         export TF_TOKEN_app_terraform_io=${{ secrets.TFC_TOKEN }}
         cd ${{ env.REPO_TEMP_PATH }}
         terraform init
-    - name: 'Run terraform plan'
+    - name: 'Update TFC Variable - location'
+      uses: cbsinteractive/create-tfc-workspace-variable-action@v1
+      with:
+        tfcToken: ${{ secrets.GH_TOKEN }}
+        orgName: ${{ inputs.ORG_NAME }}
+        workspaceName: ${{ inputs.WORKSPACE_NAME }}
+        variableName: location
+        category: terraform
+        sensitive: false
+        value: "centralus"
+    - name: 'Update TFC Variable - ARM_SUBSCRIPTION_ID'
+      uses: cbsinteractive/create-tfc-workspace-variable-action@v1
+      with:
+        tfcToken: ${{ secrets.GH_TOKEN }}
+        orgName: ${{ inputs.ORG_NAME }}
+        workspaceName: ${{ inputs.WORKSPACE_NAME }}
+        variableName: location
+        category: env
+        sensitive: true
+        value: ${{ secrets.ARM_SUBSCRIPTION_ID }}
+    - name: 'Get ID of newly created TFC workspace'
       run: |
+        workspaces=$( curl -X GET 'https://app.terraform.io/api/v2/organizations/${{ inputs.ORG_NAME}}/workspaces \
+        --header "Authorization: Bearer ${{ secrets.TFC_TOKEN }}" \
+        --header "Content-Type: application/vnd.api+json" )
+        workspaceId=$( echo $workspaces | jq '.data[] | select ( .attributes.name == "${{ inputs.WORKSPACE_NAME }}") | .id' -r
+        echo "WORKSPACE_ID=$workspaceId" >> $GITHUB_ENV
+        if [ -z "$workspaceId" ]; then exit 2 ; fi 
+    - name: 'Assign variable set to workspace to authenticate with Hyper scaler'
+      run: |
+        # Determine ID of existing variable set used to authenticate with Hyper scaler
+        variableSets=$( curl -X GET 'https://app.terraform.io/api/v2/organizations/${{ inputs.ORG_NAME}}/varsets \
+        --header "Authorization: Bearer ${{ secrets.TFC_TOKEN }}" \
+        --header "Content-Type: application/vnd.api+json" )
+        varSetId=$( echo $variableSets | jq '.data[] | select ( .attributes.name == "${{ env.TFC_AZURE_VAR_SET_NAME }}") | .id' -r
+        if [ -z "$varSetId" ]; then exit 2 ; fi
+        # Assign variable set to workspace
+        applyOutput=$( curl -X POST "https://app.terraform.io/api/v2/varset/$varSetId/relationships/workspaces" \
+        --header "Authorization: Bearer ${{ secrets.TFC_TOKEN }}" \
+        --header "Content-Type: application/vnd.api+json" \
+        --data-raw '{"data": [{"type": "workspaces", "id": "${{ env.WORKSPACE_ID }}"}]}' )
+        applyErrors=$( echo $applyOutput | jq '.errors[].details' -r )
+        if [ -n "$applyErrors" ]; then 
+          echo $applyErrors 
+          exit 2 ; 
+        fi
+    - name: 'Run Terraform Plan'
+      run: |
+        export TF_TOKEN_app_terraform_io=${{ secrets.TFC_TOKEN }}
         cd ${{ env.REPO_TEMP_PATH }}
         terraform plan
+
 
 
 # Next steps:
