@@ -68,6 +68,14 @@ jobs:
         echo "WORKSPACE_ID=$workspaceId" >> $GITHUB_ENV
         echo "workspaceId is $workspaceId"
         if [ -z "$workspaceId" ]; then exit 2 ; fi 
+    - name: 'Update TFC Workspace to connect with GitHub Repo'
+      run: |
+        workspaceUpdate=$( curl -X PATCH 'https://app.terraform.io/api/v2/organizations/${{ inputs.ORG_NAME }}/workspaces/${{ inputs.WORKSPACE_NAME }}' \
+        --header "Authorization: Bearer ${{ secrets.TFC_TOKEN }}" \
+        --header "Content-Type: application/vnd.api+json" \
+        --data-raw '{"data":{"attributes":{"vcs-repo":{"identifier":"${{ TFC_REPO }}","oauth-token-id":"${{ TFC_GH_TOKEN_ID }}","branch":"${{ TFC_REPO_BRANCH }}"}}}}' )
+        workspaceName=$( echo $workspaceUpdate | jq '.data.attributes.name' -r )
+        if [ -z "$workspaceName" ]; then exit 2 ; fi 
     - name: 'Get variable set used to authenticate with Hyper scaler'
       run: |
         variableSets=$( curl -X GET 'https://app.terraform.io/api/v2/organizations/${{ inputs.ORG_NAME}}/varsets' \
