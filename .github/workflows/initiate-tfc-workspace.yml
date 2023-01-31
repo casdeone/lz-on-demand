@@ -28,6 +28,7 @@ jobs:
         echo 'Im defining any runtime variables needed to be gathered from the inputs'
         mkdir ${{ github.workspace }}/temp
         echo "REPO_TEMP_PATH=${{ github.workspace }}/temp" >> $GITHUB_ENV
+#  Need to add step to validate the import is successful
     - name: 'Checkout ${{ inputs.TFC_REPO }} that contains the Terraform workspace code'
       uses: actions/checkout@v3
       with:
@@ -35,9 +36,6 @@ jobs:
         path: ${{ env.REPO_TEMP_PATH }}
         token: ${{ secrets.GH_TOKEN }}
         ref: ${{ inputs.TFC_REPO_BRANCH }}
-    - name: 'Cheating and sleeping for 20 seconds to let import finish'
-      run: |
-        sleep 20
     - name: 'Update provider.tf to use the correct Org and Workspace name'
       uses: cschleiden/replace-tokens@v1
       with:
@@ -59,6 +57,7 @@ jobs:
     - name: 'Authenticate to Terraform Cloud and create workspace'
       run: |
         export TF_TOKEN_app_terraform_io=${{ secrets.TFC_TOKEN }}
+        cd ${{ env.REPO_TEMP_PATH }}
         terraform init
 
 # Next steps:
