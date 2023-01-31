@@ -87,13 +87,13 @@ jobs:
         echo "VAR_SET_ID=$varSetId" >> $GITHUB_ENV
     - name: 'Add variable set used to authenticate with Hyper scaler with workspace'
       run: |        
-        applyOutput=$( curl -X POST 'https://app.terraform.io/api/v2/varsets/${{ env.VAR_SET_ID }}/relationships/workspaces' \
+        varSetOutput=$( curl -X POST 'https://app.terraform.io/api/v2/varsets/${{ env.VAR_SET_ID }}/relationships/workspaces' \
         --header "Authorization: Bearer ${{ secrets.TFC_TOKEN }}" \
         --header "Content-Type: application/vnd.api+json" \
         --data-raw '{"data": [{"type": "workspaces", "id": "${{ env.WORKSPACE_ID }}"}]}' )
-        echo "applyOutput is $applyOutput"
-        if [ -n "$applyOutput" ]; then
-          applyErrors=$( echo $applyOutput | jq '.errors[]' -r ) 
+        echo "varSetOutput is $varSetOutput"
+        if [ -n "$varSetOutput" ]; then
+          applyErrors=$( echo $varSetOutput | jq '.errors[]' -r ) 
           echo $applyErrors 
           exit 2 ; 
         fi
@@ -104,9 +104,16 @@ jobs:
         terraform plan
     - name: 'Run Terraform Apply'
       run: |
-        export TF_TOKEN_app_terraform_io=${{ secrets.TFC_TOKEN }}
-        cd ${{ env.REPO_TEMP_PATH }}
-        terraform apply -auto-approve
+        applyOutput=$( curl -X POST 'https://app.terraform.io/api/v2/runs' \
+        --header "Authorization: Bearer ${{ secrets.TFC_TOKEN }}" \
+        --header "Content-Type: application/vnd.api+json" \
+        --data-raw '{"data":{"attributes":{"message":"Initial Deployment. Initiated by GitHub Actions","auto-apply":true},"type":"runs","relationships":{"workspace":{"data":{"type":"workspaces","id":"${{ env.WORKSPACE_ID }}"}}}}}' )
+        echo "applyOutput is $applyOutput"
+        if [ -n "$applyOutput" ]; then
+          applyErrors=$( echo $applyOutput | jq '.errors[]' -r ) 
+          echo $applyErrors 
+          exit 2 ; 
+        fi
 
 
 
