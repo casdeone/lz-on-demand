@@ -66,6 +66,7 @@ jobs:
         --header "Content-Type: application/vnd.api+json" )
         workspaceId=$( echo $workspaces | jq '.data[] | select ( .attributes.name == "${{ inputs.WORKSPACE_NAME }}" ) | .id ' -r )
         echo "WORKSPACE_ID=$workspaceId" >> $GITHUB_ENV
+        echo "workspaceId is $workspaceId"
         if [ -z "$workspaceId" ]; then exit 2 ; fi 
     - name: 'Assign variable set to workspace to authenticate with Hyper scaler'
       run: |
@@ -74,13 +75,15 @@ jobs:
         --header "Authorization: Bearer ${{ secrets.TFC_TOKEN }}" \
         --header "Content-Type: application/vnd.api+json" )
         varSetId=$( echo $variableSets | jq '.data[] | select ( .attributes.name == "${{ vars.TFC_AZURE_VAR_SET_NAME }}" ) | .id ' -r )
+        echo "varSetId is $varSetId"
         if [ -z "$varSetId" ]; then exit 2 ; fi
         # Assign variable set to workspace
-        applyOutput=$( curl -X POST "https://app.terraform.io/api/v2/varset/$varSetId/relationships/workspaces" \
+        applyOutput=$( curl -X POST 'https://app.terraform.io/api/v2/varset/$varSetId/relationships/workspaces' \
         --header "Authorization: Bearer ${{ secrets.TFC_TOKEN }}" \
         --header "Content-Type: application/vnd.api+json" \
         --data-raw '{"data": [{"type": "workspaces", "id": "${{ env.WORKSPACE_ID }}"}]}' )
         applyErrors=$( echo $applyOutput | jq '.errors[].details' -r )
+        echo "applyErros is $applyErrors"
         if [ -n "$applyErrors" ]; then 
           echo $applyErrors 
           exit 2 ; 
