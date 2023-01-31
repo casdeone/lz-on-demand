@@ -82,9 +82,9 @@ jobs:
         --header "Authorization: Bearer ${{ secrets.TFC_TOKEN }}" \
         --header "Content-Type: application/vnd.api+json" \
         --data-raw '{"data": [{"type": "workspaces", "id": "${{ env.WORKSPACE_ID }}"}]}' )
-        applyErrors=$( echo $applyOutput | jq '.errors[].details' -r )
-        echo "applyErros is $applyErrors"
-        if [ -n "$applyErrors" ]; then 
+        echo "applyErrors is $applyErrors"
+        if [ -n "$applyOutput" ]; then
+          applyErrors=$( echo $applyOutput | jq '.errors[].details' -r ) 
           echo $applyErrors 
           exit 2 ; 
         fi
