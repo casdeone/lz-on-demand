@@ -78,7 +78,7 @@ jobs:
         echo "varSetId is $varSetId"
         if [ -z "$varSetId" ]; then exit 2 ; fi
         # Assign variable set to workspace
-        applyOutput=$( curl -X POST 'https://app.terraform.io/api/v2/varset/${varSetId}/relationships/workspaces' \
+        applyOutput=$( curl -X POST 'https://app.terraform.io/api/v2/varset/${{ varSetId }}/relationships/workspaces' \
         --header "Authorization: Bearer ${{ secrets.TFC_TOKEN }}" \
         --header "Content-Type: application/vnd.api+json" \
         --data-raw '{"data": [{"type": "workspaces", "id": "${{ env.WORKSPACE_ID }}"}]}' )
