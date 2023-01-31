@@ -79,7 +79,7 @@ jobs:
         echo "VAR_SET_ID=$varSetId" >> $GITHUB_ENV
     - name: 'Add variable set used to authenticate with Hyper scaler with workspace'
       run: |        
-        applyOutput=$( curl -X POST 'https://app.terraform.io/api/v2/varset/${{ env.VAR_SET_ID }}/relationships/workspaces' \
+        applyOutput=$( curl -X POST 'https://app.terraform.io/api/v2/varsets/${{ env.VAR_SET_ID }}/relationships/workspaces' \
         --header "Authorization: Bearer ${{ secrets.TFC_TOKEN }}" \
         --header "Content-Type: application/vnd.api+json" \
         --data-raw '{"data": [{"type": "workspaces", "id": "${{ env.WORKSPACE_ID }}"}]}' )
