@@ -22,8 +22,8 @@ jobs:
     - name: 'Define runtime variables'
       run: |
         echo 'Im defining any runtime variables needed to be gathered from the inputs'
-        mkdir ${{ runner.temp }}/temp
-        echo "REPO_TEMP_PATH=${{ runner.temp }}/temp" >> $GITHUB_ENV
+        mkdir ${{ github.workspace }}/temp
+        echo "REPO_TEMP_PATH=${{ github.workspace }}/temp" >> $GITHUB_ENV
     - uses: actions/checkout@v3
       with:
         repository: ${{ inputs.TFC_REPO }}
