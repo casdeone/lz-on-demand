@@ -73,7 +73,7 @@ jobs:
         variableSets=$( curl -X GET 'https://app.terraform.io/api/v2/organizations/${{ inputs.ORG_NAME}}/varsets' \
         --header "Authorization: Bearer ${{ secrets.TFC_TOKEN }}" \
         --header "Content-Type: application/vnd.api+json" )
-        varSetId=$( echo $variableSets | jq '.data[] | select ( .attributes.name == "${{ env.TFC_AZURE_VAR_SET_NAME }}" ) | .id ' -r )
+        varSetId=$( echo $variableSets | jq '.data[] | select ( .attributes.name == "${{ vars.TFC_AZURE_VAR_SET_NAME }}" ) | .id ' -r )
         if [ -z "$varSetId" ]; then exit 2 ; fi
         # Assign variable set to workspace
         applyOutput=$( curl -X POST "https://app.terraform.io/api/v2/varset/$varSetId/relationships/workspaces" \
