@@ -13,10 +13,10 @@ on:
     outputs:
       NEW_REPO_URL:
         description: 'The URL of the new repo that was created'
-        value: ${{ env.NEW_REPO_API_URL }}
-      NEW_REPO_FULLNAME:
+        value: ${{ jobs.create_repo.outputs.NEW_REPO_API_URL }}
+      NEW_REPO_FULL_NAME:
         description: 'The full name of the new repo that was created'
-        value: ${{ .NEW_REPO_FULLNAME }}
+        value: ${{ jobs.create_repo.outputs.NEW_REPO_FULL_NAME }}
 
 jobs:
   create_repo:
@@ -24,7 +24,7 @@ jobs:
     outputs:
       NEW_REPO_API_URL: ${{ env.NEW_REPO_API_URL }}
       NEW_REPO_URL: ${{ env.NEW_REPO_URL }}
-      NEW_REPO_FULLNAME: ${{ env.NEW_REPO_FULLNAME }}
+      NEW_REPO_FULL_NAME: ${{ env.NEW_REPO_FULL_NAME }}
     steps:
     - name: 'Create new repo'
       run: |
@@ -45,7 +45,7 @@ jobs:
         echo "New Repo URL is: "$newRepoUrl
         echo "NEW_REPO_API_URL=$newRepoApiUrl" >> $GITHUB_ENV
         echo "NEW_REPO_URL=$newRepoApiUrl" >> $GITHUB_ENV
-        echo "NEW_REPO_FULLNAME=$newRepoUrl" >> $GITHUB_ENV
+        echo "NEW_REPO_FULL_NAME=$newRepoUrl" >> $GITHUB_ENV
     - name: 'Import template repo'
       run: |
         importOutput=$(curl -X PUT '${{ env.NEW_REPO_API_URL }}/import' \
