@@ -2,16 +2,16 @@ name: 'Initiate TFC Worksapce'
 on: 
   workflow_call:
     inputs:
-      workspaceName:
+      WORKSPACE_NAME:
         description: 'Defines the workspace Name'
         required: true
         type: string
-      apiToken:
-        description: 'Defines the API token to authenticate with Terraform Cloud'
+      ORG_NAME:
+        description: 'Defines the Terraform Cloud organization name'
         required: true
         type: string
-      orgName:
-        description: 'Defines the Terraform Cloud organization name'
+      TFC_REPO:
+        description: 'Defines the URL that contains the workspace code'
         required: true
         type: string
 
@@ -19,10 +19,34 @@ jobs:
   create_workspace:
     runs-on: ubuntu-latest
     steps:
+    - name: 'Define runtime variables'
+      run: |
+        echo 'Im defining any runtime variables needed to be gathered from the inputs'
+        echo "REPO_TEMP_PATH=${{ env.GITHUB_PATH}}/temp" >> $GITHUB_ENV
+    - uses: actions/checkout@v3
+      with:
+        repository: ${{ inputs.TFC_REPO }}
+        path: ${{ env.REPO_TEMP_PATH }}
+    - uses: cschleiden/replace-tokens@v1
+      with:
+        tokenPrefix: '___'
+        tokenSuffix: '___'
+        files: '${{ env.REPO_TEMP_PATH }}/provider.tf'
+      env:
+        ORG_NAME: ${{ inputs.ORG_NAME }}
+        WORKSPACE_NAME: ${{ inputs.WORKSPACE_NAME }}
+    # - uses: actions/checkout@v3
+    - run: |
+          cd ${{ env.REPO_TEMP_PATH }}
+          git config user.name github-actions
+          git config user.email github-actions@github.com
+          git add .
+          git commit -m "Updated Org and Workspace name for Terraform Cloud"
+          git push
     - name: 'Authenticate to Terraform Cloud'
       run: |
-        export TF_TOKEN_app_terraform_io=${{ inputs.apiToken }}
-        
+        export TF_TOKEN_app_terraform_io=${{ secrets.TFC_TOKEN }}
+        terraform init
 
 # Next steps:
 # 1. Figure how to run TF Init within Runner to create workspace
