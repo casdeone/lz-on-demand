@@ -69,6 +69,7 @@ jobs:
         echo "workspaceId is $workspaceId"
         if [ -z "$workspaceId" ]; then exit 2 ; fi 
     - name: 'Assign variable set to workspace to authenticate with Hyper scaler'
+      shell: bash
       run: |
         # Determine ID of existing variable set used to authenticate with Hyper scaler
         variableSets=$( curl -X GET 'https://app.terraform.io/api/v2/organizations/${{ inputs.ORG_NAME}}/varsets' \
@@ -78,8 +79,8 @@ jobs:
         echo "varSetId is $varSetId"
         if [ -z "$varSetId" ]; then exit 2 ; fi
         # Assign variable set to workspace
-        updateVarSetUrl='https://app.terraform.io/api/v2/varset/'$varSetId'/relationships/workspaces'
-        applyOutput=$( curl -X POST $updateVarSetUrl \
+        # updateVarSetUrl='https://app.terraform.io/api/v2/varset/'$varSetId'/relationships/workspaces'
+        applyOutput=$( curl -X POST 'https://app.terraform.io/api/v2/varset/'$varSetId'/relationships/workspaces' \
         --header "Authorization: Bearer ${{ secrets.TFC_TOKEN }}" \
         --header "Content-Type: application/vnd.api+json" \
         --data-raw '{"data": [{"type": "workspaces", "id": "${{ env.WORKSPACE_ID }}"}]}' )
