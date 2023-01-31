@@ -2,19 +2,19 @@ name: 'Trigger Workflow'
 on:
   workflow_dispatch:
     inputs:
-      region:
+      REGION:
         description: 'Region'
         required: true
         default: 'CentralUS'
-      templateRepoUrl: 
+      TEMPLATE_REPO_URL: 
         description: 'URL of template repo'
         required: true
         default: ''
-      lzName:
+      LANDING_ZONE_NAME:
         description: 'Landing Zone Name'
         required: true
         default: ''
-      tags:
+      TAGS:
         description: 'JSON to define tags'
         required: false
         default: '{}'
@@ -26,20 +26,20 @@ jobs:
     steps:
     - name: 'Output inputs received'
       run: |
-        echo "The value stream is ${{ inputs.lzName }}"
-        echo "The region is ${{ inputs.region }}."
+        echo "The value stream is ${{ inputs.LANDING_ZONE_NAME }}"
+        echo "The region is ${{ inputs.REGION }}."
         echo "Here is a list of the tags defined:"
-        echo "${{ inputs.tags }}"
+        echo "${{ inputs.TAGS }}"
     - name: 'Define runtime variables'
       run: |
         echo 'Im defining any runtime variables needed to be gathered from the inputs'
-    - name: 'Test if ${{ inputs.lzName }} exists'
+    - name: 'Test if ${{ inputs.LANDING_ZONE_NAME }} exists'
       run: |
         repoTestOutput=$(curl \
           -H "Accept: application/vnd.github+json" \
           -H "Authorization: Bearer ${{ secrets.GH_TOKEN }}" \
           -H "X-GitHub-Api-Version: 2022-11-28" \
-          https://api.github.com/repos/${{ env.GH_ORG }}/${{ inputs.lzName }})
+          https://api.github.com/repos/${{ env.GH_ORG }}/${{ inputs.LANDING_ZONE_NAME }})
         repoExists=$( echo $repoTestOutput | jq '.id' -r )
         if [ "$repoExists" != 'null' ]; then 
           repo_exists="true"
@@ -50,7 +50,15 @@ jobs:
   call-workflow-create-gh-repo:
     uses: ./.github/workflows/create-gh-repo.yml
     with:
-      repoName: ${{ inputs.lzName }}
-      templateRepoUrl:  ${{ inputs.templateRepoUrl }}
+      REPO_NAME: ${{ inputs.LANDING_ZONE_NAME }}
+      TEMPLATE_REPO_URL:  ${{ inputs.TEMPLATE_REPO_URL }}
+    secrets: inherit
+  call-workflow-initiate-tfc-workspace:
+    uses: ./.github/workflows/initiate-tfc-workspace.yml
+    needs: call-workflow-create-gh-repo
+    with:
+      WORKSPACE_NAME: ${{ inputs.LANDING_ZONE_NAME }}
+      ORG_NAME:  ${{ vars.TFC_ORG }}
+      TFC_REPO: ${{ call-workflow-create-gh-repo.outputs.NEW_REPO_FULL_NAME }}
     secrets: inherit
 
