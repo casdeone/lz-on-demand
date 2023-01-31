@@ -102,6 +102,11 @@ jobs:
         export TF_TOKEN_app_terraform_io=${{ secrets.TFC_TOKEN }}
         cd ${{ env.REPO_TEMP_PATH }}
         terraform plan
+    - name: 'Run Terraform Apply'
+      run: |
+        export TF_TOKEN_app_terraform_io=${{ secrets.TFC_TOKEN }}
+        cd ${{ env.REPO_TEMP_PATH }}
+        terraform apply -auto-approve
 
 
 
