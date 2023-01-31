@@ -24,11 +24,16 @@ jobs:
         echo 'Im defining any runtime variables needed to be gathered from the inputs'
         mkdir ${{ github.workspace }}/temp
         echo "REPO_TEMP_PATH=${{ github.workspace }}/temp" >> $GITHUB_ENV
-    - uses: actions/checkout@v3
+    - name: 'Checkout ${{ inputs.TFC_REPO }} that contains the Terraform workspace code'
+      uses: actions/checkout@v3
       with:
         repository: ${{ inputs.TFC_REPO }}
         path: ${{ env.REPO_TEMP_PATH }}
-    - uses: cschleiden/replace-tokens@v1
+    - name: 'Cheating and sleeping for 20 seconds to let import finish'
+      run: |
+        sleep 20
+    - name: 'Update provider.tf to use the correct Org and Workspace name'
+      uses: cschleiden/replace-tokens@v1
       with:
         tokenPrefix: '___'
         tokenSuffix: '___'
@@ -37,14 +42,15 @@ jobs:
         ORG_NAME: ${{ inputs.ORG_NAME }}
         WORKSPACE_NAME: ${{ inputs.WORKSPACE_NAME }}
     # - uses: actions/checkout@v3
-    - run: |
+    - name: 'Commit and push changes to provider.tf to the repo: ${{ inputs.TFC_REPO }}'
+      run: |
           cd ${{ env.REPO_TEMP_PATH }}
           git config user.name github-actions
           git config user.email github-actions@github.com
           git add .
           git commit -m "Updated Org and Workspace name for Terraform Cloud"
           git push
-    - name: 'Authenticate to Terraform Cloud'
+    - name: 'Authenticate to Terraform Cloud and create workspace'
       run: |
         export TF_TOKEN_app_terraform_io=${{ secrets.TFC_TOKEN }}
         terraform init
