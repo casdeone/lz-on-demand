@@ -56,7 +56,7 @@ jobs:
     secrets: inherit
   call-workflow-update-tfc-provider-file:
     name: 'Updates the provider.tf file with the details of the TFC Workspace'
-    uses: ./.github/workflows/initiate-tfc-workspace.yml
+    uses: ./.github/workflows/update-tfc-provider-file.yml
     needs: call-workflow-create-gh-repo
     with:
       WORKSPACE_NAME: ${{ inputs.LANDING_ZONE_NAME }}
