@@ -1,3 +1,14 @@
+name: 'Update GitHub Repo Permissions'
+on: 
+  workflow_call:
+
+jobs:
+  update-gh-repo-permissions:
+    runs-on: ubuntu-latest
+    steps:
+    - name: 'Do the thing'
+      run: |
+        echo "Do the thing"
 ### Updates the GH Repo Permissions
 
 ## Notes
