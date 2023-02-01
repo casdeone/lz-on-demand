@@ -1,4 +1,4 @@
-name: 'Update Provider with TFC Details'
+name: 'Initialize a TFC workspace'
 on: 
   workflow_call:
     inputs:
@@ -18,10 +18,20 @@ on:
         description: 'Defines the branch that contains the workspace code'
         required: true
         type: string
+      TAGS:
+        description: 'JSON to define tags'
+        type: string
+        required: true
+    outputs:
+      TFC_WORKSPACE_ID:
+        description: 'The ID of the new TFC workspace'
+        value: ${{ jobs.initialize-tfc-workspace.outputs.TFC_WORKSPACE_ID }}
 
 jobs:
-  update-provider-file:
+  initialize-tfc-workspace:
     runs-on: ubuntu-latest
+    outputs:
+      TFC_WORKSPACE_ID: ${{ env.WORKSPACE_ID }}
     steps:
     - name: 'Define runtime variables'
       run: |
@@ -49,6 +59,16 @@ jobs:
         category: terraform
         sensitive: false
         value: "centralus"
+    - name: 'Update TFC Variable - tags'
+      uses: cbsinteractive/create-tfc-workspace-variable-action@v1
+      with:
+        tfcToken: ${{ secrets.TFC_TOKEN }}
+        orgName: ${{ inputs.ORG_NAME }}
+        workspaceName: ${{ inputs.WORKSPACE_NAME }}
+        variableName: tags
+        category: terraform
+        sensitive: false
+        value: ${{ inputs.TAGS }}"        
     - name: 'Update TFC Variable - ARM_SUBSCRIPTION_ID'
       uses: cbsinteractive/create-tfc-workspace-variable-action@v1
       with:
@@ -97,21 +117,22 @@ jobs:
           echo $applyErrors 
           exit 2 ; 
         fi
-    - name: 'Run Terraform Plan'
+    - name: 'Run Terraform Validate and Plan'
       run: |
         export TF_TOKEN_app_terraform_io=${{ secrets.TFC_TOKEN }}
         cd ${{ env.REPO_TEMP_PATH }}
+        terraform validate
         terraform plan
-    - name: 'Run Terraform Apply'
-      run: |
-        applyOutput=$( curl -X POST 'https://app.terraform.io/api/v2/runs' \
-        --header "Authorization: Bearer ${{ secrets.TFC_TOKEN }}" \
-        --header "Content-Type: application/vnd.api+json" \
-        --data-raw '{"data":{"attributes":{"message":"Initial Deployment. Initiated by GitHub Actions","auto-apply":true},"type":"runs","relationships":{"workspace":{"data":{"type":"workspaces","id":"${{ env.WORKSPACE_ID }}"}}}}}' )
-        if [ -z "$applyOutput" ]; then
-          echo "applyOutput is $applyOutput"
-          exit 2 ; 
-        fi
+    # - name: 'Run Terraform Apply'
+    #   run: |
+    #     applyOutput=$( curl -X POST 'https://app.terraform.io/api/v2/runs' \
+    #     --header "Authorization: Bearer ${{ secrets.TFC_TOKEN }}" \
+    #     --header "Content-Type: application/vnd.api+json" \
+    #     --data-raw '{"data":{"attributes":{"message":"Initial Deployment. Initiated by GitHub Actions","auto-apply":true},"type":"runs","relationships":{"workspace":{"data":{"type":"workspaces","id":"${{ env.WORKSPACE_ID }}"}}}}}' )
+    #     if [ -z "$applyOutput" ]; then
+    #       echo "applyOutput is $applyOutput"
+    #       exit 2 ; 
+    #     fi
 
 
 

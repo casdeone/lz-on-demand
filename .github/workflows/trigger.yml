@@ -64,14 +64,26 @@ jobs:
       TFC_REPO: ${{ needs.call-workflow-create-gh-repo.outputs.NEW_REPO_FULL_NAME }}
       TFC_REPO_BRANCH: ${{ needs.call-workflow-create-gh-repo.outputs.NEW_REPO_DEFAULT_BRANCH }}
     secrets: inherit
-  call-workflow-initiate-tfc-workspace:
-    name: 'Creates TFC Workspace and define variables'
-    uses: ./.github/workflows/initiate-tfc-workspace.yml
+  call-workflow-initialize-tfc-workspace:
+    name: 'Initialize TFC Workspace and define variables'
+    uses: ./.github/workflows/initialize-tfc-workspace.yml
     needs: [call-workflow-create-gh-repo, call-workflow-update-tfc-provider-file]
     with:
       WORKSPACE_NAME: ${{ inputs.LANDING_ZONE_NAME }}
       ORG_NAME:  ${{ vars.TFC_ORG }}
       TFC_REPO: ${{ needs.call-workflow-create-gh-repo.outputs.NEW_REPO_FULL_NAME }}
       TFC_REPO_BRANCH: ${{ needs.call-workflow-create-gh-repo.outputs.NEW_REPO_DEFAULT_BRANCH }}
+      TAGS: ${{ inputs.TAGS }}
+    secrets: inherit
+  call-workflow-apply-tfc-workspace:
+    name: 'Initialize TFC Workspace and define variables'
+    uses: ./.github/workflows/apply-tfc-workspace.yml
+    needs: [call-workflow-create-gh-repo, call-workflow-update-tfc-provider-file, call-workflow-initialize-tfc-workspace]
+    with:
+      WORKSPACE_NAME: ${{ inputs.LANDING_ZONE_NAME }}
+      ORG_NAME:  ${{ vars.TFC_ORG }}
+      TFC_REPO: ${{ needs.call-workflow-create-gh-repo.outputs.NEW_REPO_FULL_NAME }}
+      TFC_REPO_BRANCH: ${{ needs.call-workflow-create-gh-repo.outputs.NEW_REPO_DEFAULT_BRANCH }}
+      TFC_WORKSPACE_ID: ${{ needs.call-workflow-initialize-tfc-workspace.outputs.TFC_WORKSPACE_ID }}
     secrets: inherit
 
