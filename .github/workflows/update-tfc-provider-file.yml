@@ -28,6 +28,9 @@ jobs:
         mkdir ${{ github.workspace }}/temp
         echo "REPO_TEMP_PATH=${{ github.workspace }}/temp" >> $GITHUB_ENV
 #  Need to add step to validate the import is successful
+    - name: 'Sleep for 30 seconds'
+      run: |
+        sleep 30
     - name: 'Checkout ${{ inputs.TFC_REPO }} that contains the Terraform workspace code'
       uses: actions/checkout@v3
       with:
