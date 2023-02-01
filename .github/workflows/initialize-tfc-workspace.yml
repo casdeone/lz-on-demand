@@ -49,7 +49,7 @@ jobs:
         export TF_TOKEN_app_terraform_io=${{ secrets.TFC_TOKEN }}
         cd ${{ env.REPO_TEMP_PATH }}
         terraform init
-    - name: 'Update TFC Variable - location'
+    - name: 'Define TFC Variable - location'
       uses: cbsinteractive/create-tfc-workspace-variable-action@v1
       with:
         tfcToken: ${{ secrets.TFC_TOKEN }}
@@ -59,7 +59,7 @@ jobs:
         category: terraform
         sensitive: false
         value: "centralus"
-    - name: 'Update TFC Variable - tags'
+    - name: 'Define TFC Variable - tags'
       uses: cbsinteractive/create-tfc-workspace-variable-action@v1
       with:
         tfcToken: ${{ secrets.TFC_TOKEN }}
@@ -69,7 +69,7 @@ jobs:
         category: hcl
         sensitive: false
         value: ${{ inputs.TAGS }}"        
-    - name: 'Update TFC Variable - ARM_SUBSCRIPTION_ID'
+    - name: 'Define TFC Variable - ARM_SUBSCRIPTION_ID'
       uses: cbsinteractive/create-tfc-workspace-variable-action@v1
       with:
         tfcToken: ${{ secrets.TFC_TOKEN }}
