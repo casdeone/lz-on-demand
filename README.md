@@ -9,6 +9,7 @@
 | GH_Org | Repo Variable | Used to determine the correct GitHub Org | Core Repo |
 | TFC_TOKEN | Repo Secret | Used to authenticate with Terraform Cloud | Core Repo |
 | TFC_AZURE_VAR_SET_NAME | Repo Variable | Used to identify the Variable Set in TFC to use to authenticate with Azure | Core Repo |
+| TFC_GH_TOKEN_ID | Secret Variable | Used to identify which token TFC should use to authenticate with GitHub | Core Repo |
 | ARM_SUBSCRIPTION_ID | Repo Secret | Used to specify the Azure subscription to authenticate with | ARM | Core Repo |
 
 
@@ -28,3 +29,11 @@ curl --request GET 'https://api.github.com/repos/$org/$repo/actions/workflows' \
 --header "Authorization: Bearer $pat" | jq '.workspaces'
 ```
 
+```bash
+curl -X POST 'https://api.github.com/repos/jf781/lz-on-demand/actions/workflows/46876596/dispatches' \
+  -H "Accept: application/vnd.github+json" \
+  -H "Authorization: Bearer $pat"\
+  -H "X-GitHub-Api-Version: 2022-11-28" \
+  -d '{"ref":"main", "inputs": { "REGION":"CentralUS", "LANDING_ZONE_NAME":"exp-lz-repo-01", "TAGS":"{\"costcenter\": \"1234\", \"businessunit\": \"Engineering\", \"dayofweek\": \"Tuesday\"}", "TEMPLATE_REPO_URL":"https://github.com/jf781/lz-infra-bootstrap-repo" }}'
+  ```
+  
