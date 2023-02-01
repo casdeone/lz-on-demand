@@ -58,17 +58,7 @@ jobs:
         variableName: location
         category: terraform
         sensitive: false
-        value: "centralus"
-    - name: 'Define TFC Variable - tags'
-      uses: cbsinteractive/create-tfc-workspace-variable-action@v1
-      with:
-        tfcToken: ${{ secrets.TFC_TOKEN }}
-        orgName: ${{ inputs.ORG_NAME }}
-        workspaceName: ${{ inputs.WORKSPACE_NAME }}
-        variableName: tags
-        category: hcl
-        sensitive: false
-        value: ${{ inputs.TAGS }}"        
+        value: "centralus"  
     - name: 'Define TFC Variable - ARM_SUBSCRIPTION_ID'
       uses: cbsinteractive/create-tfc-workspace-variable-action@v1
       with:
