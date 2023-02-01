@@ -4,3 +4,5 @@
 - Terraform Cloud
 - Any additional platforms!?
 
+2. Actions to define GitHub Repo permissions
+3. Actions to define TFC Workspace permissions
