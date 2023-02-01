@@ -76,7 +76,7 @@ jobs:
       TAGS: ${{ inputs.TAGS }}
     secrets: inherit
   call-workflow-apply-tfc-workspace:
-    name: 'Initialize TFC Workspace and define variables'
+    name: 'Apply TFC Workspace'
     uses: ./.github/workflows/apply-tfc-workspace.yml
     needs: [call-workflow-create-gh-repo, call-workflow-update-tfc-provider-file, call-workflow-initialize-tfc-workspace]
     with:
